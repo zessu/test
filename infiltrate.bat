@@ -38,9 +38,6 @@ if %errorlevel% NEQ 0 (
     exit /B
 )
 
-:: Print the decrypted content
-type "%TEMP%\decrypted_%timestamp%.ps1"
-
 :: Execute the decrypted script
 powershell -NoP -NonI -Ep Bypass -File "%TEMP%\decrypted_%timestamp%.ps1"
 if %errorlevel% NEQ 0 (

